@@ -1,5 +1,6 @@
 import * as os from "os"
 import * as fs from "fs"
+import * as fsextra from "fs-extra"
 import * as path from "path"
 import * as log from "./log"
 import * as vscode from "vscode"
@@ -102,6 +103,11 @@ export async function installTools(context: vscode.ExtensionContext, progress: v
     progress.report({ message: "Unzipping DOSBOX-x" });
     await decompress(dosboxFile.file.fsPath, path.join(dosDir));
     progress.report({ message: "Unzipping DOSBOX-x", increment: 10 });
+
+    if (process.platform == "win32") {
+        fsextra.moveSync(path.join(dosDir, "mingw-build/mingw"), path.join(dosDir, "dosbox-x"));
+        fs.rmdirSync(path.join(dosDir, "mingw-build"));
+    }
 
     // FIXME check if dependencies are installed on Linux.
 }

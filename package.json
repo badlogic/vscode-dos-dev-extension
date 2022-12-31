@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@types/decompress": "^4.2.4",
+    "@types/fs-extra": "^9.0.13",
     "@types/glob": "^8.0.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
@@ -50,6 +51,7 @@
   "dependencies": {
     "@microsoft/vscode-file-downloader-api": "^1.0.1",
     "@shockpkg/archive-files": "^2.1.2",
-    "decompress": "^4.2.1"
+    "decompress": "^4.2.1",
+    "fs-extra": "^11.1.0"
   }
 }
