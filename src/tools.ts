@@ -135,6 +135,7 @@ export async function installTools(context: vscode.ExtensionContext, progress: v
         for (const file of files) {
             fs.chmodSync(path.join(dosDir, "djgpp", "i586-pc-msdosdjgpp", "bin", file), 0o755);
         }
+        fs.renameSync(path.join(dosDir, "dosbox-x", "dosbox-x-sdl1"), path.join(dosDir, "dosbox-x", "dosbox-x"));
         fs.chmodSync(path.join(dosDir, "dosbox-x", "dosbox-x"), 0o755);
     }
 
