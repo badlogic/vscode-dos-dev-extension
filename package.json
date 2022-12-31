@@ -10,14 +10,15 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:dos-dev.helloWorld"
+    "onCommand:dosdev.installTools"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "dos-dev.helloWorld",
-        "title": "Hello World"
+        "category": "DOS",
+        "command": "dosdev.installTools",
+        "title": "Install tools"
       }
     ]
   },
@@ -30,16 +31,24 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.74.0",
+    "@types/decompress": "^4.2.4",
     "@types/glob": "^8.0.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
+    "@types/vscode": "^1.74.0",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
+    "@vscode/test-electron": "^2.2.0",
     "eslint": "^8.28.0",
     "glob": "^8.0.3",
     "mocha": "^10.1.0",
-    "typescript": "^4.9.3",
-    "@vscode/test-electron": "^2.2.0"
+    "typescript": "^4.9.3"
+  },
+  "extensionDependencies": [
+    "mindaro-dev.file-downloader"
+  ],
+  "dependencies": {
+    "@microsoft/vscode-file-downloader-api": "^1.0.1",
+    "decompress": "^4.2.1"
   }
 }
