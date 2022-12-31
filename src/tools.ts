@@ -125,5 +125,18 @@ export async function installTools(context: vscode.ExtensionContext, progress: v
         fs.symlinkSync(path.join(dosDir, "dosbox-x", "dosbox-x.app", "Contents", "MacOS", "dosbox-x"), path.join(dosDir, "dosbox-x", "dosbox-x"), "file");
     }
 
+    if (process.platform == "darwin") {
+        fs.chmodSync(path.join(dosDir, "gdb", "gdb"), 0o755);
+        let files = fs.readdirSync(path.join(dosDir, "djgpp", "bin"));
+        for (const file of files) {
+            fs.chmodSync(path.join(dosDir, "djgpp", "bin", file), 0o755);
+        }
+        files = fs.readdirSync(path.join(dosDir, "djgpp", "i586-pc-msdosdjgpp", "bin"));
+        for (const file of files) {
+            fs.chmodSync(path.join(dosDir, "djgpp", "i586-pc-msdosdjgpp", "bin", file), 0o755);
+        }
+        fs.chmodSync(path.join(dosDir, "dosbox-x", "dosbox-x"), 0o755);
+    }
+
     // FIXME check if dependencies are installed on Linux.
 }
