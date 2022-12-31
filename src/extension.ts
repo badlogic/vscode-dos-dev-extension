@@ -73,9 +73,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		copyRecursiveSync(path.join(context.extensionPath, "template"), dest);
 
-		if (!vscode.workspace.getConfiguration("cmake").get<boolean>("configureOnOpen")) {
-			vscode.commands.executeCommand("cmake.configure");
-		}
+		vscode.commands.executeCommand("cmake.configure");
 	}));
 }
 
