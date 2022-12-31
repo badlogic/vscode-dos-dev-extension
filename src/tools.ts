@@ -104,9 +104,13 @@ export async function installTools(context: vscode.ExtensionContext, progress: v
     await decompress(dosboxFile.file.fsPath, path.join(dosDir));
     progress.report({ message: "Unzipping DOSBOX-x", increment: 10 });
 
+    fs.rmSync(path.join(dosDir, "COPYING"));
+    fs.mkdirSync(path.join(dosDir, "gdb"));    
     if (process.platform == "win32") {
+        fsextra.moveSync(path.join(dosDir, "gdb.exe"), path.join(dosDir, "gdb/gdb.exe"));
+        fsextra.moveSync(path.join(dosDir, "zlib1.dll"), path.join(dosDir, "gdb/zlib1.dll"));
         fsextra.moveSync(path.join(dosDir, "mingw-build/mingw"), path.join(dosDir, "dosbox-x"));
-        fs.rmdirSync(path.join(dosDir, "mingw-build"));
+        fs.rmSync(path.join(dosDir, "mingw-build"), { recursive: true, force: false });        
     }
 
     // FIXME check if dependencies are installed on Linux.
