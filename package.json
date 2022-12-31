@@ -49,6 +49,7 @@
   ],
   "dependencies": {
     "@microsoft/vscode-file-downloader-api": "^1.0.1",
+    "@shockpkg/archive-files": "^2.1.2",
     "decompress": "^4.2.1"
   }
 }

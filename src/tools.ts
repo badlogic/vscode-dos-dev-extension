@@ -7,6 +7,15 @@ import * as process from "process"
 
 import { getApi, FileDownloader } from "@microsoft/vscode-file-downloader-api";
 import * as decompress from "decompress"
+import { createArchiveByFileExtension } from "@shockpkg/archive-files"
+
+async function extractZip(source: string, dest: string) {
+    const archive = createArchiveByFileExtension(source);
+    if (!archive) throw Error(`Couldn't open ${source}`);
+    await archive.read(async entry => {
+        await entry.extract(path.join(dest, entry.path));
+    });
+}
 
 async function downloadTool(url: string, downloader: FileDownloader, context: vscode.ExtensionContext, progress: vscode.Progress<{ message?: string, increment?: number }>, progressScale: number, cancelToken: vscode.CancellationToken) {
     log.info(`Downloading ${url}`);
@@ -82,7 +91,11 @@ export async function installTools(context: vscode.ExtensionContext, progress: v
 
     log.info("Unzipping DJGPP");
     progress.report({ message: "Unzipping DJGPP" });
-    await decompress(djgppFile.file.fsPath, dosDir, { "filter": file => { if (file.type !== "link") { return true; } return false; } });
+    if (djgppFile.name.indexOf("tar.bz2") > 0) {
+        await decompress(djgppFile.file.fsPath, dosDir, { "filter": file => { if (file.type !== "link") { return true; } return false; } });
+    } else {
+        await extractZip(djgppFile.file.fsPath, dosDir);
+    }
     progress.report({ message: "Unzipping DJGPP", increment: 10 });
 
     log.info("Unzipping DOSBox-x");
