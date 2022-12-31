@@ -125,7 +125,7 @@ export async function installTools(context: vscode.ExtensionContext, progress: v
         fs.symlinkSync(path.join(dosDir, "dosbox-x", "dosbox-x.app", "Contents", "MacOS", "dosbox-x"), path.join(dosDir, "dosbox-x", "dosbox-x"), "file");
     }
 
-    if (process.platform == "darwin") {
+    if (process.platform == "linux") {
         fs.chmodSync(path.join(dosDir, "gdb", "gdb"), 0o755);
         let files = fs.readdirSync(path.join(dosDir, "djgpp", "bin"));
         for (const file of files) {
