@@ -4,12 +4,13 @@ import * as tools from "./tools";
 import * as path from "path";
 import * as os from "os";
 import * as fs from "fs";
+import * as fsextra from "fs-extra";
 
 export function activate(context: vscode.ExtensionContext) {
 	initLog();
 
 	context.subscriptions.push(vscode.commands.registerCommand('dosdev.installTools', async () => {
-		let dosDir = path.join(os.homedir(), ".dos");
+		const dosDir = path.join(os.homedir(), ".dos");
 		if (fs.existsSync(dosDir)) {
 			let reinstall = await vscode.window.showInformationMessage("DOS tools exist. Re-install?", "Yes", "No");
 			if (reinstall != "Yes") return;
@@ -27,6 +28,54 @@ export function activate(context: vscode.ExtensionContext) {
 		);
 
 		vscode.window.showInformationMessage(`DOS tools installed in ${dosDir}`);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('dosdev.initProject', async () => {
+		if (!vscode.workspace.workspaceFolders) {
+			vscode.window.showErrorMessage("Can not init project without an open workspace. Please open a folder first.");
+			return;
+		}
+
+		const dest = vscode.workspace.workspaceFolders[0].uri.fsPath;
+		const files = fs.readdirSync(dest);
+		if (files.length) {
+			let ignoreNotEmpty = await vscode.window.showInformationMessage("Project folder is not empty. This may override already existing files.\n\nContinue?", "Yes", "No");
+			if (ignoreNotEmpty == "No")
+				return;
+		}
+
+		const dosDir = path.join(os.homedir(), ".dos");
+		if (!fs.existsSync(dosDir)) {
+			let reinstall = await vscode.window.showInformationMessage("DOS tools not installed. Install?", "Yes", "No");
+			if (reinstall == "Yes") {
+				await vscode.commands.executeCommand("dosdev.installTools");
+			}
+		}
+
+		try {
+			fs.mkdirSync(path.join(dest, "assets"));
+		} catch (e) { }
+
+		const copyRecursiveSync = (src: string, dest: string) => {
+			if (!fs.existsSync(src)) return;
+			if (fs.statSync(src).isDirectory()) {
+				try {
+					fs.mkdirSync(dest);
+				} catch (e) { }
+				fs.readdirSync(src).forEach((childItemName) => {
+					copyRecursiveSync(path.join(src, childItemName),
+						path.join(dest, childItemName));
+				});
+			} else {
+				fs.copyFileSync(src, dest);
+			}
+		};
+
+		copyRecursiveSync(path.join(context.extensionPath, "template"), dest);
+
+		if (!vscode.workspace.getConfiguration("cmake").get<boolean>("configureOnOpen")) {
+			vscode.commands.executeCommand("cmake.configure");
+		}
 	}));
 }
 

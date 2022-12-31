@@ -10,7 +10,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:dosdev.installTools"
+    "onCommand:dosdev.installTools",
+    "onCommand:dosdev.initProject"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -19,6 +20,11 @@
         "category": "DOS",
         "command": "dosdev.installTools",
         "title": "Install tools"
+      },
+      {
+        "category": "DOS",
+        "command": "dosdev.initProject",
+        "title": "Init project"
       }
     ]
   },

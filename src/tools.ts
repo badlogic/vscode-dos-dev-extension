@@ -139,5 +139,8 @@ export async function installTools(context: vscode.ExtensionContext, progress: v
         fs.chmodSync(path.join(dosDir, "dosbox-x", "dosbox-x"), 0o755);
     }
 
+    fs.copyFileSync(path.join(context.extensionPath, "tools", "toolchain-djgpp.cmake"), path.join(dosDir, "toolchain-djgpp.cmake"));
+    fs.copyFileSync(path.join(context.extensionPath, "tools", "dosbox-x.conf"), path.join(dosDir, "dosbox-x.conf"));
+
     // FIXME check if dependencies are installed on Linux.
 }
