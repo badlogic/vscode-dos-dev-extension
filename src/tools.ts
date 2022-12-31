@@ -87,7 +87,8 @@ export async function installTools(context: vscode.ExtensionContext, progress: v
 
     log.info("Unzipping GDB");
     progress.report({ message: "Unzipping GDB" });
-    await decompress(gdbFile.file.fsPath, dosDir);
+    fs.mkdirSync(path.join(dosDir, "gdb"))
+    await decompress(gdbFile.file.fsPath, path.join(dosDir, "gdb"));
     progress.report({ message: "Unzipping GDB", increment: 10 });
 
     log.info("Unzipping DJGPP");
@@ -104,13 +105,24 @@ export async function installTools(context: vscode.ExtensionContext, progress: v
     await decompress(dosboxFile.file.fsPath, path.join(dosDir));
     progress.report({ message: "Unzipping DOSBOX-x", increment: 10 });
 
-    fs.rmSync(path.join(dosDir, "COPYING"));
-    fs.mkdirSync(path.join(dosDir, "gdb"));    
     if (process.platform == "win32") {
-        fsextra.moveSync(path.join(dosDir, "gdb.exe"), path.join(dosDir, "gdb/gdb.exe"));
-        fsextra.moveSync(path.join(dosDir, "zlib1.dll"), path.join(dosDir, "gdb/zlib1.dll"));
-        fsextra.moveSync(path.join(dosDir, "mingw-build/mingw"), path.join(dosDir, "dosbox-x"));
-        fs.rmSync(path.join(dosDir, "mingw-build"), { recursive: true, force: false });        
+        fs.rmSync(path.join(dosDir, "COPYING"));
+        fsextra.moveSync(path.join(dosDir, "mingw-build", "mingw"), path.join(dosDir, "dosbox-x"));
+        fs.rmSync(path.join(dosDir, "mingw-build"), { recursive: true, force: false });
+    }
+
+    if (process.platform == "darwin") {
+        fs.chmodSync(path.join(dosDir, "gdb", "gdb"), 0o755);
+        let files = fs.readdirSync(path.join(dosDir, "djgpp", "bin"));
+        for (const file of files) {
+            fs.chmodSync(path.join(dosDir, "djgpp", "bin", file), 0o755);
+        }
+        files = fs.readdirSync(path.join(dosDir, "djgpp", "i586-pc-msdosdjgpp", "bin"));
+        for (const file of files) {
+            fs.chmodSync(path.join(dosDir, "djgpp", "i586-pc-msdosdjgpp", "bin", file), 0o755);
+        }
+        fs.chmodSync(path.join(dosDir, "dosbox-x", "dosbox-x.app", "Contents", "MacOS", "dosbox-x"), 0o755);
+        fs.symlinkSync(path.join(dosDir, "dosbox-x", "dosbox-x.app", "Contents", "MacOS", "dosbox-x"), path.join(dosDir, "dosbox-x", "dosbox-x"), "file");
     }
 
     // FIXME check if dependencies are installed on Linux.
