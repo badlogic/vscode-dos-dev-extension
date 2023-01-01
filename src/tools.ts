@@ -9,6 +9,7 @@ import * as process from "process"
 import { getApi, FileDownloader } from "@microsoft/vscode-file-downloader-api";
 import decompress = require("decompress");
 import { createArchiveByFileExtension } from "@shockpkg/archive-files"
+import { setFips } from "crypto"
 
 async function extractZip(source: string, dest: string) {
     const archive = createArchiveByFileExtension(source);
@@ -52,21 +53,25 @@ export async function installTools(context: vscode.ExtensionContext, progress: v
     let gdbUrl: string;
     let djgppUrl: string;
     let dosboxUrl: string;
+    let ninjaUrl: string;
     switch (process.platform) {
         case "win32":
             gdbUrl = "https://github.com/badlogic/gdb-7.1a-djgpp/releases/download/gdb-7.1a-djgpp/gdb-7.1a-djgpp-windows.zip";
             djgppUrl = "https://github.com/andrewwutw/build-djgpp/releases/download/v3.3/djgpp-mingw-gcc1210-standalone.zip";
             dosboxUrl = "https://github.com/badlogic/dosbox-x/releases/download/dosbox-x-gdb-v0.84.5/dosbox-x-mingw-win64-20221223232734.zip";
+            ninjaUrl = "https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-win.zip";
             break;
         case "darwin":
             gdbUrl = "https://github.com/badlogic/gdb-7.1a-djgpp/releases/download/gdb-7.1a-djgpp/gdb-7.1a-djgpp-macos-x86_64.zip";
             djgppUrl = "https://github.com/andrewwutw/build-djgpp/releases/download/v3.3/djgpp-osx-gcc1210.tar.bz2";
-            dosboxUrl = "https://github.com/badlogic/dosbox-x/releases/download/dosbox-x-gdb-v0.84.5/dosbox-x-macosx-x86_64-20221223232510.zip"
+            dosboxUrl = "https://github.com/badlogic/dosbox-x/releases/download/dosbox-x-gdb-v0.84.5/dosbox-x-macosx-x86_64-20221223232510.zip";
+            ninjaUrl = "https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-mac.zip";
             break;
         case "linux":
             gdbUrl = "https://github.com/badlogic/gdb-7.1a-djgpp/releases/download/gdb-7.1a-djgpp/gdb-7.1a-djgpp-linux.zip";
             djgppUrl = "https://github.com/andrewwutw/build-djgpp/releases/download/v3.3/djgpp-linux64-gcc1210.tar.bz2";
             dosboxUrl = "https://github.com/badlogic/dosbox-x/releases/download/dosbox-x-gdb-v0.84.5/dosbox-x-0.84.5-linux.zip";
+            ninjaUrl = "https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-linux.zip";
             break;
         default:
             log.error(`Unsupported operating system ${process.platform}`);
@@ -74,11 +79,12 @@ export async function installTools(context: vscode.ExtensionContext, progress: v
     }
 
     const downloader = await getApi();
-    let gdbFile, djgppFile, dosboxFile;
+    let gdbFile, djgppFile, dosboxFile, ninjaFile;
     try {
-        gdbFile = await downloadTool(gdbUrl, downloader, context, progress, 20, cancelToken);
-        djgppFile = await downloadTool(djgppUrl, downloader, context, progress, 20, cancelToken);
-        dosboxFile = await downloadTool(dosboxUrl, downloader, context, progress, 20, cancelToken);
+        gdbFile = await downloadTool(gdbUrl, downloader, context, progress, 15, cancelToken);
+        djgppFile = await downloadTool(djgppUrl, downloader, context, progress, 15, cancelToken);
+        dosboxFile = await downloadTool(dosboxUrl, downloader, context, progress, 15, cancelToken);
+        ninjaFile = await downloadTool(ninjaUrl, downloader, context, progress, 15, cancelToken);
     } catch (e) {
         console.log(e);
         log.error(`Couldn't download tools: ${(e as any).message}`);
@@ -105,6 +111,11 @@ export async function installTools(context: vscode.ExtensionContext, progress: v
     await decompress(dosboxFile.file.fsPath, path.join(dosDir));
     progress.report({ message: "Unzipping DOSBOX-x", increment: 10 });
 
+    log.info("Unzipping Ninja");
+    progress.report({ message: "Unzipping Ninja" });
+    await decompress(ninjaFile.file.fsPath, path.join(dosDir));
+    progress.report({ message: "Unzipping Ninja", increment: 10 });
+
     if (process.platform == "win32") {
         fs.rmSync(path.join(dosDir, "COPYING"));
         fsextra.moveSync(path.join(dosDir, "mingw-build", "mingw"), path.join(dosDir, "dosbox-x"));
@@ -123,6 +134,7 @@ export async function installTools(context: vscode.ExtensionContext, progress: v
         }
         fs.chmodSync(path.join(dosDir, "dosbox-x", "dosbox-x.app", "Contents", "MacOS", "dosbox-x"), 0o755);
         fs.symlinkSync(path.join(dosDir, "dosbox-x", "dosbox-x.app", "Contents", "MacOS", "dosbox-x"), path.join(dosDir, "dosbox-x", "dosbox-x"), "file");
+        fs.chmodSync(path.join(dosDir, "ninja"), 0o755);
     }
 
     if (process.platform == "linux") {
@@ -137,10 +149,12 @@ export async function installTools(context: vscode.ExtensionContext, progress: v
         }
         fs.renameSync(path.join(dosDir, "dosbox-x", "dosbox-x-sdl1"), path.join(dosDir, "dosbox-x", "dosbox-x"));
         fs.chmodSync(path.join(dosDir, "dosbox-x", "dosbox-x"), 0o755);
+        fs.chmodSync(path.join(dosDir, "ninja"), 0o755);
     }
 
     fs.copyFileSync(path.join(context.extensionPath, "tools", "toolchain-djgpp.cmake"), path.join(dosDir, "toolchain-djgpp.cmake"));
     fs.copyFileSync(path.join(context.extensionPath, "tools", "dosbox-x.conf"), path.join(dosDir, "dosbox-x.conf"));
 
     // FIXME check if dependencies are installed on Linux.
+    // FIXME delete zips/tar.bz2s
 }
