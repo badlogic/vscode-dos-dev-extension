@@ -55,7 +55,8 @@
   "extensionDependencies": [
     "mindaro-dev.file-downloader",
     "ms-vscode.cpptools-extension-pack",
-    "llvm-vs-code-extensions.vscode-clangd"
+    "llvm-vs-code-extensions.vscode-clangd",
+    "webfreak.debug"
   ],
   "dependencies": {
     "@microsoft/vscode-file-downloader-api": "^1.0.1",
