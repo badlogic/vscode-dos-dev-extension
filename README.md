@@ -226,6 +226,36 @@ The debugger has a few limitations & gotchas:
 
 The tools currently do not work on ARM64 Linux or ARM64 Windows. They do work on Apple Silicon on macOS.
 
+
+## FAQ
+
+### DOS development resources
+
+Check out the resources below to get your DOS programming juices flowing:
+
+* [256-Color VGA Programming in C](http://www.brackeen.com/vga/index.html), a 5 part tutorial on VGA programming, using DJGPP.
+* [The Art of Demomaking](https://www.flipcode.com/archives/The_Art_of_Demomaking-Issue_01_Prologue.shtml), a 16 part series explaining and demonstrating various demo effects, using DJGPP.
+* [Brennan's Guide to Inline Assembly](http://www.delorie.com/djgpp/doc/brennan/brennan_att_inline_djgpp.html), in case you want to speed up your app with some artisan, hand-crafted assembly.
+
+### How does the debugging work?
+I'm glad you ask! It's an unholy ball of duct tape consisting of:
+
+* [GDB stub](https://sourceware.org/gdb/onlinedocs/gdb/Remote-Stub.html), implemented as a header-file only library in [`src/gdbstub.h`](https://github.com/badlogic/vscode-dos-dev-extension/blob/main/template/src/gdbstub.h). It implements the [GDB remote protocol](https://sourceware.org/gdb/onlinedocs/gdb/Remote-Protocol.html) and is included in the program itself, which it will then control and "expose" to the debugger for inspection and modification. It's a heavily modified and extended version of [Glenn Engel & Jonathan Brogdon GDB stub](http://ftp.lanet.lv/ftp/mirror/x2ftp/msdos/programming/djgpp/v2misc//gdbst01s.zip), so it can actually do all the things expected of a somewhat modern debugger. I would suggest not looking into that file. It was not build with love or care, just enough spite so it gave up and started working. Mostly.
+* [A custom, minimal build of GDB 7.1a](https://github.com/badlogic/gdb-7.1a-djgpp), one of the last versions of GDB to support `COFF_GO32` executables as produced by DJGPP.
+* [A modified version of DOSBox-x](https://github.com/badlogic/dosbox-x), which was necessary as serial port communication over TCP/IP was broken on macOS. My [pull request](https://github.com/joncampbell123/dosbox-x/pull/3892) was merged, so hopefully this template can switch over to the official DOSBox-x build eventually.
+
+And here's how it works:
+
+1. DOSBox-x is configured to expose serial port 0 (COM1) to the outside world via TCP on port 5123 in nullmodem, non-handshake mode.
+1. The program is started in DOSBox-x and first calls `gdb_start()`. This function initializes the serial port to use the highest baud rate possible, then triggers a breakpoint via `int 3`. This in turn triggers a special signal handler implemented in the GDB stub which listens for incoming data from the serial port.
+1. The debugger (GDB) is told to connect to a remote process via TCP at address localhost:5123. This establishes a connection to the signal handler that waits for data coming in on the serial port.
+1. GDB sends commands, like set a breakpoint, step, or continue, which the signal handler interprets and executes.
+1. As a special case, if the program is running and the debugger wants to interrupt it to set further breakpoints or get information, the GDB stub also hooks the timer interrupt to poll the serial port state. In case there's data waiting, it set an internal flag, which will prompt `gdb_checkpoint()` to trigger a software breakpoint via `int 3`, which in turn will invoke the signal handler.
+
+In theory, all of this is very simple. In practice, it can fall apart in the most creative ways. The implementation was tested with the included GDB version, as well as the Native Debugger extension which sits on top the included GDB version.
+
+I can make no guarantees it will work with other GDB versions or higher level debuggers as found in e.g. CLion, etc. It should. But it might not, as most debuggers don't stick to the protocol spec.
+
 ## Release Notes
 
 ### 1.0.0
