@@ -5,6 +5,7 @@
   "version": "0.2.0",
   "repository": "https://github.com/badlogic/vscode-dos-dev-extension",
   "publisher": "badlogicgames",
+  "icon": "icon.png",
   "engines": {
     "vscode": "^1.74.0"
   },
