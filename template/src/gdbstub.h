@@ -13,19 +13,21 @@
 #include <sys/farptr.h>
 #include <stdbool.h>
 
+#ifdef NDEBUG
+#define gdb_start()
+#define gdb_checkpoint()
+#else
 #define gdb_start() \
 	_gdb_start();   \
 	asm("int $3");
 #define gdb_checkpoint() \
 	if (_gdb_checkpoint()) asm("int $3");
-
-void _gdb_start();
-bool _gdb_checkpoint();
+#endif
 
 #ifdef GDB_IMPLEMENTATION
 #ifdef NDEBUG
 void _gdb_start() {}
-void _gdb_checkpoint() {}
+bool _gdb_checkpoint() {}
 #else
 void gdb_loop(int exception_number);
 void gdb_tick_handler();
