@@ -69,6 +69,12 @@ You only need to install the tools once. They can then be used by all your DOS p
 
 The first time you run this command in VS Code, you will be asked if you want to install the development tools if they are not yet installed.
 
+You may also be asked to pick a "Kit". Select `djgpp` from the list.
+
+You may be asked to install `clangd`. Select `Yes`.
+
+Finally, you may be asked if you want to "Configure" the project. Select `Yes`.
+
 The command will generate a project looking like this:
 
 ![docs/projectlayout.png](docs/projectlayout.png)
