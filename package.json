@@ -2,7 +2,7 @@
   "name": "dos-dev",
   "displayName": "dos-dev",
   "description": "",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "repository": "https://github.com/badlogic/vscode-dos-dev-extension",
   "publisher": "badlogicgames",
   "icon": "icon.png",
