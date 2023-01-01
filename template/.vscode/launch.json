@@ -4,7 +4,7 @@
         {
             "type": "gdb",
             "request": "attach",
-            "name": "Debug target",
+            "name": "DOS debug target",
             "executable": "${command:cmake.getLaunchTargetPath}.exe",
             "target": "localhost:5123",
             "remote": true,
@@ -16,7 +16,7 @@
         },
         {
             "type": "node-terminal",
-            "name": "Run target",
+            "name": "DOS run target",
             "request": "launch",
             "command": "cmake --build build && ${userHome}/.dos/dosbox-x/dosbox-x -conf ${userHome}/.dos/dosbox-x.conf -fastlaunch -exit ${command:cmake.getLaunchTargetPath}.exe && exit"
         }

@@ -88,6 +88,7 @@ export function activate(context: vscode.ExtensionContext) {
 		};
 
 		copyRecursiveSync(path.join(context.extensionPath, "template"), dest);
+		fs.renameSync(path.join(dest, "_.gitignore"), path.join(dest, ".gitignore"));
 		vscode.commands.executeCommand("workbench.action.reloadWindow");
 	}));
 }

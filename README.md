@@ -1,14 +1,233 @@
-# dos-dev
+# VS Code DOS Development Extension (dos-dev)
 
-The VS Code dos-dev extension makes writing and debugging DOS applications super easy.
+The VS Code DOS development extension is a plug-and-play solution for writing and debugging 32-bit protected mode DOS appliations in C/C++.
 
 ## Features
+* Automatic installation of required tools
+    * [DJGPP](https://www.delorie.com/djgpp/), a fork of GCC 12.1.0, to compile C/C++ 32-bit protected mode DOS applications
+    * A [GDB fork](https://github.com/badlogic/gdb-7.1a-djgpp/releases/tag/gdb-7.1a-djgpp) for debugging
+    * A [DOSBox-x fork](https://github.com/badlogic/dosbox-x/) with modifications to support remote debugging via GDB
+    * [Ninja](https://ninja-build.org/)
+    * Extensions for C/C++ development in VS Code
+        * [C/C++ Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools-extension-pack)
+        * [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools)
+        * [clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd)
+        * [Native Debug](https://marketplace.visualstudio.com/items?itemName=webfreak.debug)
+    * A DOSBox-x configuration for debugging
+    * A CMake toolchain file for DJGPP
+* Simple project initialization
+    * CMake based builds, both in VS Code and on the command line
+    * VS Code launch configurations for debugging
+    * Sane default settings for C/C++ development
+    * [GDB stub](https://sourceware.org/gdb/onlinedocs/gdb/Remote-Stub.html) integration for debugging
+    * A simple mode 0x13 demo app plotting pixels while waiting for a keypress
+    * Sensible .gitignore
+* Debugging support in VS Code and the command line via GDB
+
+## Quickstart
+* Install CMake
+    * On Linux, install these packages through your package manager
+
+        `libncurses5 libfl-dev libslirp-dev libfluidsynth-dev`
+* Install the extension in VS Code
+    * `CTRL+SHIFT+P` (or `CMD+SHIFT+P` on macOS)
+    * `ext install badlogicgames.dos-dev`
+* Open a new empty folder, then
+    * `CTRL+SHIFT+P` (or `CMD+SHIFT+P` on macOS)
+    * `DOS: Init Project`
+        * When asked to install the DOS tools, select `Yes`
+        * When asked to install clangd, select `Yes`
+    * Press `F5` to build and debug the demo app in DOSBox-x.
 
 ## Requirements
+You need to install the following 3rd party software:
+* [CMake](https://cmake.org/). Ensure it's available on the command line via your `PATH` environment variable.
+    * Windows: use the installer from the [CMake download page](https://cmake.org/download/).
+    * Linux: use your package manager, e.g. `sudo apt install cmake`
+    * macOS: use [Homebrew](https://brew.sh/), `brew install cmake`
+* On Linux, install `libncurses5 libfl-dev libslirp-dev libfluidsynth-dev` via your package manager.
+    * Ubuntu/Debian: `sudo apt install libncurses5 libfl-dev libslirp-dev libfluidsynth-dev`
+
+Everything else is taken care of by the automatic tools installation.
+
+## Usage
+
+### Installing the tools
+* `CTRL+SHIFT+P` (or `CMD+SHIFT+P` on macOS)
+* Type and select `DOS: Install tools`
+
+This will download DJGPP, GDB, DOSBox-x, Ninja, a DOSBox-x configuration file for debugging, and a CMake toolchain file for DJGPP to the folder `$HOME/.dos`.
+
+You only need to install the tools once. They can then be used by all your DOS projects.
+
+### Initializing a new project
+* Open a new empty folder in VS Code
+* `CTRL+SHIFT+P` (or `CMD+SHIFT+P` on macOS)
+* Type and select `DOS: Init project`
+
+The first time you run this command in VS Code, you will be asked if you want to install the development tools if they are not yet installed.
+
+The command will generate a project looking like this:
+
+![docs/projectlayout.png](docs/projectlayout.png)
+
+In the root of the project, you find
+* `.clang-format`, a format definition used to format your `.h`, `.c`, or `.cpp` files. Th `.vscode/settings.json` file configures formatting on save.
+* `.gitignore`, to exclude folders that should not get commited to your Git repository.
+* `CMakeLists.txt`, the CMake build definition.
+
+The `src/` folder contains the sources of your app. By default, 2 files are added:
+* `gdbstub.h`, a [GDB stub](https://sourceware.org/gdb/onlinedocs/gdb/Remote-Stub.html) implementation as a head-only library file you can include in your app to support debugging.
+* `main.c`, a simple demo app that sets mode 0x13, draws random pixels, and waits for a key press to exit.
+
+The CMake build will automatically pick up any new source files in the `src/` folder or sub-folders of `src/`.
+
+The `assets/` folder is where you play your asset files, e.g. graphics, sounds, etc. The CMake build will copy these next to your app's executable. Note that in general, DOS only supports [8.3 file names](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-fscc/18e63b13-ba43-4f5f-a5b7-11e871b71f14). Some DOS enviroments, e.g. DOSBox-x do support long file names. To provide maximum compatibility, stick to the 8.3 file name format for your assets and executable files.
+
+The `.vscode/` folder contains various configuration files, defining launch configurations, sensible settings for C/C++ development, and so on. In general, you do not have to touch them.
+
+### Debugging and running
+The project template provides two launch configurations:
+
+* `DOS debug target`
+* `DOS run target`
+
+To debug your app, select the `DOS debug target` configuration in the `Run and Debug` panel.
+
+![](docs/debuglaunchconfig.png)
+
+Also make sure you have the CMake `Debug` variant selected, which you can accomplish via the status bar at the bottom of VS Code.
+
+![](docs/debugvariant.png)
+
+Press `F5` to start debugging. The debugger will stop at the statement after the call to `gdb_start()`. You can set breakpoints, step, continue, and inspect local variables as usual.
+
+If your app is running, you can interrupt it at any point using the `Pause` button of the debugger controls.
+
+![](docs/pause.png)
+
+The debugger will stop at the statement after the call to `gdb_checkpoint()`.
+
+> **Note**: you can not set breakpoints while the app is running.
+
+If you want to run the app without a debugger attached, select the `DOS run target` launch configuration in the `Run and Debug` panel.
+
+![](docs/runlaunchconfig.png)
+
+Also make sure you have the CMake `Release` variant selected, which you can accomplish via the status bar at the bottom of VS Code.
+
+![](docs/releasevariant.png)
+
+Press `F5` to start run your app without a debugger attached.
+
+Both launch configurations will launch the currently selected CMake launch target. If you have added additional executable targets in the `CMakeLists.txt` file, make sure to select the one you want to launch via the CMake launch target setting in the status bar.
+
+![](docs/launchtarget.png)
+
+By default, there is only one executable target called `main` which is automatically selected as the CMake launch target.
+
+> **Note:** If the launch configuration and CMake variant do not match, e.g. `DOS debug target` and `Release` variant, or `DOS run target` and `Debug` variant, the debugger is not able to connect, or the app will hang.
+
+## Building and running on the command line
+The below assume you are running in a `Bash` like environment, e.g. any shell on macOS or Linux, for Git Bash on Windows.
+
+You can also run the below on Windows in `cmd.exe` or Powershell. However, you need to adjust any paths starting with `~/.dos` to point to the respective directory in your user's home directory.
+
+All commands are meant to be executed in the root folder of the project.
+
+### Building
+```
+cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=~/.dos/ninja -DCMAKE_TOOLCHAIN_FILE=~/.dos/toolchain-djgpp.cmake -S . -B build -G Ninja
+```
+
+This configures your build to produce a debug binary. For a release binary, specify `-DCMAKE_BUILD_TYPE=Release`. You generally run this command only when your build type changes or you've made changes to your `CMakeLists.txt` file.
+
+Once configured, you can build the program as follows:
+```
+cmake --build build
+```
+You run this everytime you added, removed, or modified source code or assets.
+
+This puts the executable file and assets in the `build/` directory.
+
+### Running
+```
+~/.dos/dosbox-x/dosbox-x -fastlaunch -exit -conf tools/dosbox-x.conf build/main.exe
+```
+
+Launches the executable in DOSBox-x. Make sure to configure and build with `-DCMAKE_BUILD_TYPE=Release` before launching.
+
+### Debugging
+```
+~/.dos/dosbox-x/dosbox-x -fastlaunch -exit -conf tools/dosbox-x.conf build/main.exe
+```
+
+Launches the executable in DOSBox-x. Make sure to build with `-DCMAKE_BUILD_TYPE=Debug` before launching.
+
+In a second shell:
+
+```
+~/.dos/gdb/gdb
+(gdb) file build/main.exe
+(gdb) target remote localhost:5123
+```
+
+GDB will connect to the program running in DOSBox-x. See the [GDB cheat sheet](https://darkdust.net/files/GDB%20Cheat%20Sheet.pdf) on how to use the command line driver of GDB.
+
+
+## Adding debugging support to your application
+By default, the `main.c` source file is setup to support debugging, so you do not have to do the below manually.
+
+If you start from a clean slate and want to add debugging support to your application, you'll have to integrate the [GDB stub](https://sourceware.org/gdb/onlinedocs/gdb/Remote-Stub.html).
+
+Debugging is accomplished via the [GDB stub](https://sourceware.org/gdb/onlinedocs/gdb/Remote-Stub.html) implemented in `src/gdbstub.h`, a header-only library, which requires cooperation from your application.
+
+In your source file that contains your `main()` function, include the stub as follows:
+
+```
+#define GDB_IMPLEMENTATION
+#include "gdbstub.h"
+```
+
+At the beginning of your `main()` function, call `gdb_start()`:
+
+```
+int void main(void) {
+    gdb_start();
+
+    // Rest of your code
+
+```
+
+When compiling your app for debugging, `gdb_start()` will wait for the debugger to connect.
+
+Finally, if your app has a main loop, add `gdb_checkpoint()` at the end of the loop:
+
+```
+do {
+    // Your main loop implementation
+
+    gdb_checkpoint();
+} while (some_condition)
+```
+
+This will allow the debugger to interrupt your program.
+
+When compiling your app in release mode, `gdb_start()` and `gdb_checkpoint()` are no-ops.
 
 ## Known Issues
+The debugger has a few limitations & gotchas:
+
+* You can not set breakpoints while the program is running. Set breakpoints before launching a debugging session, or while the program is halted after hitting a breakpoint, stepping, or was interrupted.
+* The debugger is quite a bit slower than what you may be used to. This is due to the use of the serial port emulation for communication.
+* Always make sure to close the DOSBox-x window before launching a new debugging session.
+* If the debugger appears to be stuck, either wait for it to timeout, or execute the `Debug: Stop` command from the command palette.
+* In general, the debugging support is one big hack, there may be dragons. Still better than `printf`-ing your way through life!
+
+The tools currently do not work on ARM64 Linux or ARM64 Windows. They do work on Apple Silicon on macOS.
 
 ## Release Notes
 
-### 0.0.1
+### 1.0.0
+* Initial release.
 

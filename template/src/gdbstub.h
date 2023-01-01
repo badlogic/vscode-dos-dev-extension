@@ -27,7 +27,7 @@
 #ifdef GDB_IMPLEMENTATION
 #ifdef NDEBUG
 void _gdb_start() {}
-bool _gdb_checkpoint() {}
+bool _gdb_checkpoint() { return false; }
 #else
 void _gdb_start();
 bool _gdb_checkpoint();
