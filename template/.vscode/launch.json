@@ -12,7 +12,7 @@
             "gdbpath": "${userHome}/.dos/gdb/gdb",
             "preLaunchTask": "task-dosbox-debug",
             "printCalls": true,
-            "stopAtConnect": true
+            "stopAtConnect": true,
         },
         {
             "type": "node-terminal",

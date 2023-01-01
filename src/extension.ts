@@ -30,7 +30,20 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		);
 
-		vscode.window.showInformationMessage(`DOS tools installed in ${dosDir}`);
+		vscode.window.withProgress(
+			{
+				title: `DOS tools installed in ${dosDir}`,
+				location: vscode.ProgressLocation.Notification,
+				cancellable: false
+			}, async (progress, cancelToken) => {
+				function sleep(ms: number) {
+					return new Promise((resolve) => {
+						setTimeout(resolve, ms);
+					});
+				}
+				await sleep(5000);
+			}
+		);
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('dosdev.initProject', async () => {
