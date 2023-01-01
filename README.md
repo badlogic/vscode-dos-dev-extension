@@ -236,6 +236,7 @@ Check out the resources below to get your DOS programming juices flowing:
 * [256-Color VGA Programming in C](http://www.brackeen.com/vga/index.html), a 5 part tutorial on VGA programming, using DJGPP.
 * [The Art of Demomaking](https://www.flipcode.com/archives/The_Art_of_Demomaking-Issue_01_Prologue.shtml), a 16 part series explaining and demonstrating various demo effects, using DJGPP.
 * [Brennan's Guide to Inline Assembly](http://www.delorie.com/djgpp/doc/brennan/brennan_att_inline_djgpp.html), in case you want to speed up your app with some artisan, hand-crafted assembly.
+* [My MiniFB DOS backend](https://github.com/emoon/minifb/pull/98), which makes it easy to handle keyboard and mouse input, get a high-precision timer, and set VESA modes. See [`dos.c`](https://github.com/emoon/minifb/blob/2ff844e981c00bb2b0c3cc788a6b455a3fc982e3/tests/dos/dos.c) for an example.
 
 ### How does the debugging work?
 I'm glad you ask! It's an unholy ball of duct tape consisting of:

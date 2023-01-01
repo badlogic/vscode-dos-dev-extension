@@ -11,7 +11,6 @@
             "cwd": "${workspaceRoot}",
             "gdbpath": "${userHome}/.dos/gdb/gdb",
             "preLaunchTask": "task-dosbox-debug",
-            "printCalls": true,
             "stopAtConnect": true,
         },
         {
