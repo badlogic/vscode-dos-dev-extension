@@ -29,6 +29,8 @@
 void _gdb_start() {}
 bool _gdb_checkpoint() {}
 #else
+void _gdb_start();
+bool _gdb_checkpoint();
 void gdb_loop(int exception_number);
 void gdb_tick_handler();
 static unsigned char *gdb_read_packet();
