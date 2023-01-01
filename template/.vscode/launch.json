@@ -11,7 +11,8 @@
             "cwd": "${workspaceRoot}",
             "gdbpath": "${userHome}/.dos/gdb/gdb",
             "preLaunchTask": "task-dosbox-debug",
-            "printCalls": true
+            "printCalls": true,
+            "stopAtConnect": true
         },
         {
             "type": "node-terminal",
