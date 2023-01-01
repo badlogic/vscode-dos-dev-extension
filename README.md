@@ -267,6 +267,9 @@ I can make no guarantees it will work with other GDB versions or higher level de
 
 ## Release Notes
 
+## [1.3.0]
+- Improve `DOS debug target` by not showing the Native Debug extensions internal console window.
+
 ## [1.2.0]
 - Fix `DOS run target` launch config on Windows. Need to run via a `.bat` file in Powershell to get the same behaviour.
 - Show `Waiting for debugger` when `gdb_start()` is called in a debug configuration.
