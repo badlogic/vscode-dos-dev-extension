@@ -5,9 +5,12 @@ import * as path from "path";
 import * as os from "os";
 import * as fs from "fs";
 import * as fsextra from "fs-extra";
+import * as log from "./log"
 
 export function activate(context: vscode.ExtensionContext) {
 	initLog();
+
+	log.info("===== Welcome to DOS development :D =====");
 
 	context.subscriptions.push(vscode.commands.registerCommand('dosdev.installTools', async () => {
 		const dosDir = path.join(os.homedir(), ".dos");

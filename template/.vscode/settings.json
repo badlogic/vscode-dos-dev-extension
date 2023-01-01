@@ -1,6 +1,5 @@
 {
 	"C_Cpp.intelliSenseEngine": "disabled",
-	// "cmake.configureOnOpen": true,
 	"editor.formatOnSave": true,
 	"editor.tabSize": 4
 }

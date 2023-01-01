@@ -7,7 +7,7 @@ import * as vscode from "vscode"
 import * as process from "process"
 
 import { getApi, FileDownloader } from "@microsoft/vscode-file-downloader-api";
-import * as decompress from "decompress"
+import decompress = require("decompress");
 import { createArchiveByFileExtension } from "@shockpkg/archive-files"
 
 async function extractZip(source: string, dest: string) {
