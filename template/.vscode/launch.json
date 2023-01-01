@@ -12,6 +12,7 @@
             "gdbpath": "${userHome}/.dos/gdb/gdb",
             "preLaunchTask": "task-dosbox-debug",
             "stopAtConnect": true,
+            "internalConsoleOptions": "neverOpen"
         },
         {
             "type": "node-terminal",
