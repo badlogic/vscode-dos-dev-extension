@@ -19,6 +19,7 @@
 #else
 #define gdb_start() \
 	_gdb_start();   \
+	printf("Waiting for debugger...\n"); \
 	asm("int $3");
 #define gdb_checkpoint() \
 	if (_gdb_checkpoint()) asm("int $3");

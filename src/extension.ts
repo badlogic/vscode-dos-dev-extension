@@ -89,7 +89,16 @@ export function activate(context: vscode.ExtensionContext) {
 
 		copyRecursiveSync(path.join(context.extensionPath, "template"), dest);
 		fs.renameSync(path.join(dest, "_.gitignore"), path.join(dest, ".gitignore"));
-		vscode.commands.executeCommand("workbench.action.reloadWindow");
+		// On macOS, explicitely calling cmake.configure will show an error notification
+		// as the configure step is triggered twice. Reloading the window will make 
+		// CMake tools trigger configure due to cmake.configureOnLoad in settings.json
+		// On Windows, CMake tools refuses to configure on load because C_Cpp.intelliSenseEngine
+		// is disabled. We thus trigger manually.
+		if (process.platform === "win32") {
+			await vscode.commands.executeCommand("cmake.configure");
+		} else {
+			vscode.commands.executeCommand("workbench.action.reloadWindow");
+		}
 	}));
 }
 
