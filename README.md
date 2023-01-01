@@ -1,6 +1,6 @@
 # VS Code DOS Development Extension (dos-dev)
 
-<video src="docs/raw.mp4"></video>
+<video src="https://github.com/badlogic/vscode-dos-dev-extension/blob/main/docs/raw.gif?raw=true"></video>
 
 The VS Code DOS development extension is a plug-and-play solution for writing and debugging 32-bit protected mode DOS appliations in C/C++.
 
