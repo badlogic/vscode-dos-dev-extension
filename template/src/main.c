@@ -26,7 +26,7 @@ int main(void) {
 		for (int i = 0; i < 200; i++) {
 			int x = rand() % 320;
 			int y = rand() % 200;
-			int color = rand() % 255;
+			int color = rand() % 16;
 			vram[x + y * 320] = color;
 		}
 		__djgpp_nearptr_disable();
