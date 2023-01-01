@@ -2,7 +2,7 @@
   "name": "dos-dev",
   "displayName": "dos-dev",
   "description": "Plug-and-play C/C++ DOS development in Visual Studio Code.",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "repository": "https://github.com/badlogic/vscode-dos-dev-extension",
   "publisher": "badlogicgames",
   "icon": "icon.png",
