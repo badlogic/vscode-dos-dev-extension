@@ -2,6 +2,8 @@
 
 ## [1.2.0]
 - Fix `DOS run target` launch config on Windows. Need to run via a `.bat` file in Powershell to get the same behaviour.
+- Show `Waiting for debugger` when `gdb_start()` is called in a debug configuration.
+- Fix configuring project after project init on Windows.
 
 ## [1.1.0]
 - README.md updates
